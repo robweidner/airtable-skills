@@ -2,6 +2,20 @@
 
 All notable changes to the Airtable Skills plugin.
 
+## [1.2.0] - 2026-02-05
+
+### Added
+
+- **Claude Cowork compatibility** - Plugin now works in both Claude Code CLI and Claude Cowork web
+- **Bundled MCP configuration** - `.mcp.json` auto-configures Airtable MCP server on install
+- Added `cowork` keyword for marketplace discovery
+- Added `homepage` and `repository` fields to plugin manifest
+
+### Documentation
+
+- Updated README with Cowork installation instructions
+- Added airtable-field-audit skill to README skills table
+
 ## [1.1.0] - 2026-02-05
 
 ### Added
