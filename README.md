@@ -1,146 +1,194 @@
-# Airtable Skills Plugin for Claude Code
+# Airtable Skills for Claude Code
 
-A comprehensive Claude Code plugin that teaches Claude how to work effectively with Airtable across the full workflow: schema design, API interactions, scripting, interfaces, and automations.
+> Turn Claude into an Airtable expert — schema design, scripting, automations, interfaces, and API integrations.
 
-## Skills Included
+[![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-Plugin-6366f1)](https://claude.ai/code)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/robweidner/airtable-skills/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-| Skill | Invocation | Description |
-|-------|------------|-------------|
-| `airtable` | Auto-invokes | Schema, API, scripting, Interface Designer, automations |
-| `airtable-extensions` | `/airtable-extensions` | Custom React-based interface extensions |
+## What's Included
 
-## Installation
-
-Clone this repository into your Claude Code plugins directory:
-
-```bash
-# Navigate to your Claude Code plugins directory
-cd ~/.claude/plugins
-
-# Clone the plugin
-git clone https://github.com/yourusername/airtable-skills.git airtable
-```
-
-Or copy the `skills/` directory to your project's `.claude/skills/` folder for project-specific use.
-
-## Setup
-
-### Create a Personal Access Token (PAT)
-
-**Important:** Create a scoped PAT for each project. This ensures Claude can only access bases for that specific project, protecting your other Airtable data.
-
-1. Go to [airtable.com/create/tokens](https://airtable.com/create/tokens)
-2. Click "Create new token"
-3. Name it descriptively (e.g., "CRM Project - Claude")
-4. **Select ONLY the base(s)** you want Claude to access
-5. Add required scopes:
-   - `data.records:read` - Read records
-   - `data.records:write` - Create/update records
-   - `schema.bases:read` - Read table schemas
-   - `schema.bases:write` - Create/modify tables and fields
-6. Click "Create token" and copy it
-
-### Store Your Token
-
-Add to your project's `.secrets.env` (never commit this file):
-
-```bash
-AIRTABLE_PAT=patXXXXXXXXXXXXXX
-```
-
-Or configure in your environment for the Airtable MCP if using that.
+| Skill | Trigger | What It Does |
+|-------|---------|--------------|
+| **airtable** | Auto-invokes on Airtable work | Full Airtable assistant — schema, scripts, automations, interfaces, API |
+| **airtable-extensions** | `/airtable-extensions` | Custom React extensions (Blocks SDK) |
 
 ## Quick Start
 
-Once installed, Claude will automatically invoke the Airtable skill when it detects Airtable-related work.
+### Installation
+
+**Via Plugin Marketplace (Recommended):**
+```bash
+/plugin marketplace add robweidner/airtable-skills
+```
+
+**Manual Clone:**
+```bash
+cd ~/.claude/plugins
+git clone https://github.com/robweidner/airtable-skills.git airtable
+```
+
+### Setup Your Token
+
+1. Go to [airtable.com/create/tokens](https://airtable.com/create/tokens)
+2. Create a scoped token for your project (don't use a global token)
+3. Select only the base(s) you need
+4. Add scopes: `data.records:read`, `data.records:write`, `schema.bases:read`, `schema.bases:write`
+5. Store in `.secrets.env`:
+   ```bash
+   AIRTABLE_PAT=patXXXXXXXXXXXXXX
+   ```
 
 ### First Use
 
-On first invocation, the skill will ask:
+The skill asks for your preferences on first run:
 
-1. **Your experience level** - Beginner, Power User, or Developer
-2. **Emoji preference** - How to handle field name prefixes
+| Preference | Options | Description |
+|------------|---------|-------------|
+| Experience | `beginner` / `power-user` / `developer` | Controls explanation depth |
+| Emoji Mode | `auto` / `new-only` / `ask` / `none` | Field name emoji prefixes |
+| Script Style | `minimal` / `comprehensive` | Output data vs. all-in-one scripts |
+| Field IDs | `true` / `false` | Store IDs in descriptions for robust scripts |
 
-Add these to your CLAUDE.md to save preferences:
-
+Save to your `CLAUDE.md`:
 ```markdown
 ## Airtable Preferences
-
-airtable_experience: power-user
+airtable_experience: developer
 airtable_emoji_mode: auto
 airtable_script_style: minimal
+airtable_use_field_ids: true
 ```
 
-### Example Workflows
+## Capabilities
 
-**Create a table:**
+### What You Can Do
+
+| Task | How It Works |
+|------|--------------|
+| **Create tables & fields** | API creates schema, suggests standard fields (timestamps, audit) |
+| **All 28 field types** | Full support matrix with API parameters |
+| **Write scripts** | Airtable scripting SDK patterns, adapts to experience level |
+| **Build interfaces** | Interface Designer guidance, component patterns |
+| **Set up automations** | ASCII diagrams + click-by-click instructions |
+| **API integrations** | REST API patterns, rate limiting, batch operations |
+| **React extensions** | Full Blocks SDK with hooks and component patterns |
+
+### API Limitations (with Workarounds)
+
+The Airtable API has known limitations. This skill handles them automatically:
+
+| Can't Create via API | Workaround |
+|---------------------|------------|
+| **Bases** | User creates manually, provides base ID |
+| **Formula fields** | Creates as text with `[convert]` marker, formula in description |
+| **Rollup fields** | Same as formula |
+| **Lookup fields** | Same as formula |
+| **Automations** | Generates ASCII flow diagrams + setup steps |
+
+After API operations, you get a checklist of manual conversions needed.
+
+### Emoji Naming System
+
+Visual field identification at a glance:
+
 ```
-Create a Contacts table with name, email, phone, and company fields
+📝 Name           [text]
+📧 Email          [email]
+🔢 Quantity       [number]
+💰 Total          [currency]
+📅 Due Date       [date]
+🔗 Company        [link]
+📊 Status         [select]
+🧮 Full Name      [formula]
 ```
 
-**Write a script:**
-```
-Write an Airtable script to find all records where Status is "Pending" and update them to "In Progress"
-```
+Stack markers for context: `[wip][formula] Commission Calc`
 
-**Set up an automation:**
-```
-Help me create an automation that sends a Slack message when a new record is added to the Orders table
-```
+## Example Prompts
 
-**Build an interface:**
+**Schema Design:**
 ```
-Design an interface for my sales team to view and update their assigned leads
+Create a Contacts table with name, email, phone, company, and status fields
 ```
 
-## Features
+**Scripting:**
+```
+Write a script to find all Pending tasks and update them to In Progress
+```
 
-### Schema Management
-- Create and modify tables, fields, and views
-- Suggest standard fields (Record ID, timestamps, created/modified by)
-- Handle all 28 Airtable field types
+**Automations:**
+```
+Set up an automation that sends Slack when a new order is created over $1000
+```
 
-### Formula Field Workaround
-Airtable's API cannot create formula fields directly. The skill uses a workaround:
-- Creates field as Single Line Text with marker
-- Adds the formula to the field description
-- Outputs a checklist of fields needing manual conversion
+**Interfaces:**
+```
+Design an interface for sales reps to manage their assigned leads
+```
 
-### Airtable Scripting
-- Vanilla JavaScript with Airtable SDK patterns
-- Adapts explanation depth to your experience level
-- Offers "comprehensive" or "minimal" script styles
-
-### Automation Diagrams
-Since automations can't be created via API, the skill generates:
-- ASCII diagrams showing the automation flow
-- Step-by-step click-by-click setup instructions
-
-### Emoji Naming Conventions
-Optional emoji prefixes for visual field identification:
-- Field types: `[link]`, `[date]`, `[formula]`, `[currency]`, etc.
-- Status: `[wip]`, `[tested]`, `[archived]`, `[external-integration]`
-
-## Airtable MCP (Optional)
-
-If you have the Airtable MCP configured, the skill can use it for enhanced capabilities. The skill works without MCP using the REST API.
+**Extensions:**
+```
+/airtable-extensions
+Build a custom extension to visualize sales pipeline as a Kanban board
+```
 
 ## Documentation
 
-- [Field Types Reference](skills/airtable/reference/field-types.md)
-- [Emoji Conventions](skills/airtable/reference/emoji-conventions.md)
-- [API Patterns](skills/airtable/reference/api-patterns.md)
-- [Scripting API](skills/airtable/reference/scripting-api.md)
-- [Automations](skills/airtable/reference/automations.md)
-- [Interface Designer](skills/airtable/reference/interface-designer.md)
-- [PAT Security](skills/airtable/reference/pat-security.md)
+### Reference Files
 
-## External Resources
+| File | When to Use |
+|------|-------------|
+| [field-types.md](skills/airtable/reference/field-types.md) | Creating/modifying fields |
+| [emoji-conventions.md](skills/airtable/reference/emoji-conventions.md) | Naming conventions |
+| [api-patterns.md](skills/airtable/reference/api-patterns.md) | REST API operations |
+| [mcp-patterns.md](skills/airtable/reference/mcp-patterns.md) | Airtable MCP tools |
+| [scripting-api.md](skills/airtable/reference/scripting-api.md) | Writing scripts |
+| [automations.md](skills/airtable/reference/automations.md) | Automation setup |
+| [interface-designer.md](skills/airtable/reference/interface-designer.md) | Building interfaces |
+| [pat-security.md](skills/airtable/reference/pat-security.md) | Token security |
 
-- [Airtable Web API](https://airtable.com/developers/web)
+### External Resources
+
+- [Airtable Web API](https://airtable.com/developers/web/api/introduction)
 - [Airtable Scripting](https://airtable.com/developers/scripting)
-- [Airtable Interface Extensions](https://airtable.com/developers/interface-extensions)
+- [Airtable Extensions SDK](https://airtable.com/developers/extensions)
+
+## Why Field IDs?
+
+Field names change. Field IDs don't.
+
+When `airtable_use_field_ids: true`, the skill:
+1. Stores field IDs in descriptions after creation: `Field ID: fldXXXXXXXXXXXXXX`
+2. Uses IDs in scripts instead of names
+3. Your scripts survive field renames
+
+## Airtable MCP (Optional)
+
+If you have the Airtable MCP configured, the skill prefers it over REST API. Works fine without MCP — falls back to REST API with rate limiting.
+
+## Common Gotchas
+
+| Issue | Solution |
+|-------|----------|
+| "Base ID required" | Create base in Airtable UI, provide `appXXXXXX` ID |
+| Field names are case-sensitive | Use field IDs instead |
+| Linked records fail | Create the linked table first |
+| Formula field not created | Use the `[convert]` workaround |
+| Rate limited | Skill handles this — uses exponential backoff |
+
+## Contributing
+
+Contributions welcome:
+
+- **Add scripting patterns** — `examples/scripting-patterns.md`
+- **Update API docs** — as Airtable changes
+- **New automation templates** — `reference/automations.md`
+- **Bug fixes and improvements**
 
 ## License
 
 MIT
+
+---
+
+**Built by [Rob Weidner](https://github.com/robweidner)** — Contributions and feedback welcome!

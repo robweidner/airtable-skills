@@ -1,0 +1,15 @@
+{
+    "name": "airtable",
+    "version": "1.0.0",
+    "description": "Comprehensive Airtable assistant for schema design, API interactions, scripting, interfaces, and automations.",
+    "author": {
+        "name": "Rob Weidner"
+    },
+    "keywords": [
+        "airtable",
+        "database",
+        "no-code",
+        "automation",
+        "scripting"
+    ]
+}
