@@ -413,25 +413,25 @@ for native automation steps rather than doing everything in code.
 ## File Checklist
 
 ### Core Files
-- [ ] `README.md`
-- [ ] `CLAUDE.md`
-- [ ] `skills/airtable/SKILL.md`
-- [ ] `skills/airtable-extensions/SKILL.md`
+- [x] `README.md`
+- [x] `CLAUDE.md`
+- [x] `skills/airtable/SKILL.md`
+- [x] `skills/airtable-extensions/SKILL.md`
 
 ### Main Skill Reference Files
-- [ ] `skills/airtable/reference/api-patterns.md`
-- [ ] `skills/airtable/reference/mcp-patterns.md`
-- [ ] `skills/airtable/reference/scripting-api.md`
-- [ ] `skills/airtable/reference/field-types.md`
-- [ ] `skills/airtable/reference/emoji-conventions.md`
-- [ ] `skills/airtable/reference/interface-designer.md`
-- [ ] `skills/airtable/reference/automations.md`
-- [ ] `skills/airtable/reference/pat-security.md`
-- [ ] `skills/airtable/examples/scripting-patterns.md`
+- [x] `skills/airtable/reference/api-patterns.md`
+- [x] `skills/airtable/reference/mcp-patterns.md`
+- [x] `skills/airtable/reference/scripting-api.md`
+- [x] `skills/airtable/reference/field-types.md`
+- [x] `skills/airtable/reference/emoji-conventions.md`
+- [x] `skills/airtable/reference/interface-designer.md`
+- [x] `skills/airtable/reference/automations.md`
+- [x] `skills/airtable/reference/pat-security.md`
+- [x] `skills/airtable/examples/scripting-patterns.md`
 
 ### Extensions Skill Reference Files
-- [ ] `skills/airtable-extensions/reference/extension-api.md`
-- [ ] `skills/airtable-extensions/reference/component-patterns.md`
+- [x] `skills/airtable-extensions/reference/extension-api.md`
+- [x] `skills/airtable-extensions/reference/component-patterns.md`
 
 **Total: 16 files**
 
