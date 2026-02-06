@@ -151,14 +151,14 @@ Build a custom extension to visualize sales pipeline as a Kanban board
 
 | File | When to Use |
 |------|-------------|
-| [field-types.md](skills/airtable/reference/field-types.md) | Creating/modifying fields |
-| [emoji-conventions.md](skills/airtable/reference/emoji-conventions.md) | Naming conventions |
-| [api-patterns.md](skills/airtable/reference/api-patterns.md) | REST API operations |
-| [mcp-patterns.md](skills/airtable/reference/mcp-patterns.md) | Airtable MCP tools |
-| [scripting-api.md](skills/airtable/reference/scripting-api.md) | Writing scripts |
-| [automations.md](skills/airtable/reference/automations.md) | Automation setup |
-| [interface-designer.md](skills/airtable/reference/interface-designer.md) | Building interfaces |
-| [pat-security.md](skills/airtable/reference/pat-security.md) | Token security |
+| [field-types.md](plugins/airtable/skills/airtable/reference/field-types.md) | Creating/modifying fields |
+| [emoji-conventions.md](plugins/airtable/skills/airtable/reference/emoji-conventions.md) | Naming conventions |
+| [api-patterns.md](plugins/airtable/skills/airtable/reference/api-patterns.md) | REST API operations |
+| [mcp-patterns.md](plugins/airtable/skills/airtable/reference/mcp-patterns.md) | Airtable MCP tools |
+| [scripting-api.md](plugins/airtable/skills/airtable/reference/scripting-api.md) | Writing scripts |
+| [automations.md](plugins/airtable/skills/airtable/reference/automations.md) | Automation setup |
+| [interface-designer.md](plugins/airtable/skills/airtable/reference/interface-designer.md) | Building interfaces |
+| [pat-security.md](plugins/airtable/skills/airtable/reference/pat-security.md) | Token security |
 
 ### External Resources
 
@@ -197,9 +197,9 @@ This plugin belongs to the community. Here's how you can get involved:
 
 Fork it, make it better, and submit a PR:
 
-- **Add scripting patterns** — `examples/scripting-patterns.md`
+- **Add scripting patterns** — `plugins/airtable/skills/airtable/examples/scripting-patterns.md`
 - **Update API docs** — as Airtable changes
-- **New automation templates** — `reference/automations.md`
+- **New automation templates** — `plugins/airtable/skills/airtable/reference/automations.md`
 - **Bug fixes and improvements**
 
 ### Build Your Own Skills
@@ -207,7 +207,7 @@ Fork it, make it better, and submit a PR:
 The best part of Claude Code skills? **You can create your own.**
 
 1. Fork this repo as a starting point
-2. Modify the skills in `skills/` to match your workflow
+2. Modify the skills in `plugins/airtable/skills/` to match your workflow
 3. Add new skills for your specific Airtable use cases
 4. Keep it private or share it back with the community
 

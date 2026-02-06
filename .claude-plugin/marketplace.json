@@ -12,13 +12,13 @@
         {
             "name": "airtable",
             "description": "Comprehensive Airtable assistant for schema design, API interactions, scripting, interfaces, and automations",
-            "version": "1.2.0",
+            "version": "1.3.0",
             "author": {
                 "name": "Rob Weidner"
             },
             "homepage": "https://github.com/robweidner/airtable-skills",
             "tags": ["airtable", "database", "no-code", "automation", "scripting"],
-            "source": "."
+            "source": "./plugins/airtable"
         }
     ]
 }
