@@ -20,7 +20,11 @@
 
 **Claude Code (CLI):**
 ```bash
+# Add the marketplace
 /plugin marketplace add robweidner/airtable-skills
+
+# Install the plugin
+/plugin install airtable@robweidner-airtable
 ```
 
 **Claude Cowork (Web):**

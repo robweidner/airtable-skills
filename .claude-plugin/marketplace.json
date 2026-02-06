@@ -1,0 +1,24 @@
+{
+    "name": "robweidner-airtable",
+    "owner": {
+        "name": "Rob Weidner",
+        "url": "https://github.com/robweidner"
+    },
+    "metadata": {
+        "description": "Airtable skills for Claude Code - schema design, scripting, automations, and more",
+        "version": "1.0.0"
+    },
+    "plugins": [
+        {
+            "name": "airtable",
+            "description": "Comprehensive Airtable assistant for schema design, API interactions, scripting, interfaces, and automations",
+            "version": "1.2.0",
+            "author": {
+                "name": "Rob Weidner"
+            },
+            "homepage": "https://github.com/robweidner/airtable-skills",
+            "tags": ["airtable", "database", "no-code", "automation", "scripting"],
+            "source": "."
+        }
+    ]
+}
