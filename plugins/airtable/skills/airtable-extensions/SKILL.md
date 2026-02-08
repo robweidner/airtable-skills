@@ -314,3 +314,82 @@ npx block release
 ```
 
 After publishing, users see the released version. Stop the dev server to test the published version yourself.
+
+#### Auto-Release on Git Push (Claude Code Hook)
+
+If you version your extension in git, you can set up a Claude Code hook to automatically run `block release` every time you push — so your Airtable extension stays in sync with your repo.
+
+**1. Create the hook script** at `~/.claude/hooks/post-push-block-release.sh`:
+
+```bash
+#!/bin/bash
+# Post-Push Block Release Hook
+# After a successful git push in an Airtable extension repo,
+# automatically run `npx block release` to publish to Airtable.
+
+# Set this to your extension repo path
+EXTENSION_REPO="$HOME/path/to/your-extension"
+
+INPUT=$(cat)
+COMMAND=$(echo "$INPUT" | grep -o '"command"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/"command"[[:space:]]*:[[:space:]]*"//' | sed 's/"$//')
+
+# Only trigger on git push commands
+if [[ "$COMMAND" != *"git push"* ]]; then
+  exit 0
+fi
+
+# Check if the push was in the extension repo
+if [[ "$COMMAND" != *"$EXTENSION_REPO"* ]]; then
+  TOOL_CWD=$(echo "$INPUT" | grep -o '"cwd"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/"cwd"[[:space:]]*:[[:space:]]*"//' | sed 's/"$//')
+  if [[ "$TOOL_CWD" != "$EXTENSION_REPO"* ]]; then
+    exit 0
+  fi
+fi
+
+# Skip release if the push failed
+OUTPUT=$(echo "$INPUT" | grep -o '"output"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1)
+if echo "$OUTPUT" | grep -qiE '(rejected|failed|fatal|error|denied)'; then
+  echo "Git push failed. Skipping block release." >&2
+  exit 0
+fi
+
+echo "Running block release after git push..." >&2
+cd "$EXTENSION_REPO"
+RELEASE_OUTPUT=$(npx block release 2>&1)
+if [ $? -eq 0 ]; then
+  echo "Block release successful! Extension published to Airtable."
+else
+  echo "Block release failed. Run 'npx block release' manually."
+  echo "$RELEASE_OUTPUT" >&2
+fi
+exit 0
+```
+
+**2. Make it executable:**
+
+```bash
+chmod +x ~/.claude/hooks/post-push-block-release.sh
+```
+
+**3. Add the hook** to `~/.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/post-push-block-release.sh",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Now every `git push` in your extension repo will automatically publish to Airtable — one workflow, both destinations.
