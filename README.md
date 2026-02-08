@@ -3,7 +3,7 @@
 > Turn Claude into an Airtable expert — schema design, scripting, automations, interfaces, and API integrations.
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-Plugin-6366f1)](https://claude.ai/code)
-[![Version](https://img.shields.io/badge/version-1.3.0-blue)](https://github.com/robweidner/airtable-skills/releases)
+[![Version](https://img.shields.io/badge/version-1.5.0-blue)](https://github.com/robweidner/airtable-skills/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ## What's Included
@@ -11,7 +11,7 @@
 | Skill | Trigger | What It Does |
 |-------|---------|--------------|
 | **airtable** | Auto-invokes on Airtable work | Full Airtable assistant — schema, scripts, automations, interfaces, API |
-| **airtable-extensions** | `/airtable-extensions` | Custom React extensions (Blocks SDK) |
+| **airtable-extensions** | `/airtable-extensions` | Custom React extensions — Blocks SDK + Interface Extensions SDK, dev server troubleshooting, auto-release hooks |
 | **airtable-field-audit** | `/airtable-field-audit` | Find and fix field naming issues — duplicates, whitespace, similar names |
 | **airtable-base-audit** | `/airtable-base-audit` | Comprehensive base health analysis — field usage, performance, schema quality |
 
@@ -84,7 +84,7 @@ airtable_use_field_ids: true
 | **Build interfaces** | Interface Designer guidance, component patterns |
 | **Set up automations** | ASCII diagrams + click-by-click instructions |
 | **API integrations** | REST API patterns, rate limiting, batch operations |
-| **React extensions** | Full Blocks SDK with hooks and component patterns |
+| **React extensions** | Blocks SDK + Interface Extensions SDK, data source config, `block run` troubleshooting, auto-release on git push |
 
 ### API Limitations (with Workarounds)
 
@@ -145,6 +145,12 @@ Design an interface for sales reps to manage their assigned leads
 Build a custom extension to visualize sales pipeline as a Kanban board
 ```
 
+**Interface Extensions:**
+```
+/airtable-extensions
+I'm getting "Field does not exist" errors in my interface extension — help me debug it
+```
+
 ## Documentation
 
 ### Reference Files
@@ -159,6 +165,7 @@ Build a custom extension to visualize sales pipeline as a Kanban board
 | [automations.md](plugins/airtable/skills/airtable/reference/automations.md) | Automation setup |
 | [interface-designer.md](plugins/airtable/skills/airtable/reference/interface-designer.md) | Building interfaces |
 | [pat-security.md](plugins/airtable/skills/airtable/reference/pat-security.md) | Token security |
+| [interface-extensions-workflow.md](plugins/airtable/skills/airtable-extensions/reference/interface-extensions-workflow.md) | Interface extension dev workflow, troubleshooting, checklists |
 
 ### External Resources
 
@@ -188,6 +195,8 @@ If you have the Airtable MCP configured, the skill prefers it over REST API. Wor
 | Linked records fail | Create the linked table first |
 | Formula field not created | Use the `[convert]` workaround |
 | Rate limited | Skill handles this — uses exponential backoff |
+| Extension out of sync with repo | Set up the auto-release Claude Code hook (see `/airtable-extensions`) |
+| `block run` won't connect in Chrome | Check CORS flags — see Interface Extensions troubleshooting |
 
 ## Contributing
 
