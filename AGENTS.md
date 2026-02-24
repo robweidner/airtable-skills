@@ -52,7 +52,7 @@ claude plugin validate .
 
 ### Plugin root
 - `plugins/airtable/.claude-plugin/plugin.json`: plugin manifest (name/version/metadata). **Must** be inside `.claude-plugin/` per Claude Code plugin spec.
-- `plugins/airtable/.mcp.json`: bundled MCP server configuration that runs `@airtable/mcp-server` via `npx` and passes through `AIRTABLE_PAT`.
+- `plugins/airtable/.mcp.json`: bundled MCP server configuration that runs `airtable-mcp-server` via `npx` and passes through `AIRTABLE_PAT`.
 
 ### Skills layout
 Skills live under `plugins/airtable/skills/<skill-name>/`.

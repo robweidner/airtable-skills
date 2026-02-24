@@ -111,7 +111,7 @@ source .secrets.env
 Set in your shell profile (`~/.zshrc`, `~/.bashrc`):
 
 ```bash
-export AIRTABLE_PAT_PROJECTNAME=patXXXXXXXXXXXXXX
+export AIRTABLE_PAT=patXXXXXXXXXXXXXX
 ```
 
 Use project-specific variable names to avoid conflicts.
@@ -198,9 +198,9 @@ If using the Airtable MCP, configure the token:
   "mcpServers": {
     "airtable": {
       "command": "npx",
-      "args": ["@anthropic/airtable-mcp"],
+      "args": ["-y", "airtable-mcp-server"],
       "env": {
-        "AIRTABLE_API_KEY": "patXXXXXXXXXXXXXX"
+        "AIRTABLE_API_KEY": "${AIRTABLE_PAT}"
       }
     }
   }

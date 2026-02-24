@@ -260,9 +260,9 @@ The Airtable MCP requires configuration with your PAT. Typically set in:
   "mcpServers": {
     "airtable": {
       "command": "npx",
-      "args": ["@anthropic/airtable-mcp"],
+      "args": ["-y", "airtable-mcp-server"],
       "env": {
-        "AIRTABLE_API_KEY": "patXXXXXXXXXXXXXX"
+        "AIRTABLE_API_KEY": "${AIRTABLE_PAT}"
       }
     }
   }

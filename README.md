@@ -23,7 +23,7 @@ Before installing, make sure you have:
 
 - [ ] **Claude Code** installed and authenticated ([setup guide](https://code.claude.com/docs/en/quickstart))
 - [ ] **Claude Code v1.0.33+** — run `claude --version` to check. If below 1.0.33, update first.
-- [ ] **Node.js 18+** — required for the Airtable MCP server (`npx @airtable/mcp-server`)
+- [ ] **Node.js 18+** — required for the Airtable MCP server (`npx airtable-mcp-server`)
 - [ ] **An Airtable account** with a Team, Business, or Enterprise plan (for extension development; schema/scripting works on any plan)
 
 ## Quick Start
