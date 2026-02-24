@@ -84,3 +84,10 @@ Defined in `plugins/airtable/CLAUDE.md` and referenced throughout the main skill
 - `airtable_use_field_ids`: true | false
 
 Changes to preference behavior must update both `plugins/airtable/CLAUDE.md` and the main `SKILL.md`.
+
+## Context Management
+
+Use subagents (Task tool) for exploration and research to keep the main context clean. The SKILL.md and reference files in this repo are large — reading them all directly burns context fast.
+
+**Spawn a subagent for:** codebase exploration (3+ files), PR reviews, cross-file consistency checks, researching SDK docs
+**Stay in main context for:** direct file edits, 1-2 file reads, back-and-forth with the user
