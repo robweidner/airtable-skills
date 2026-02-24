@@ -106,7 +106,7 @@ import { useRecords, useBase } from '@airtable/blocks/interface/ui';
 function RecordList() {
   const base = useBase();
   const table = base.getTableByIdIfExists('tblXXXXXXXXXX');
-  const records = table ? useRecords(table) : [];
+  const records = useRecords(table);
   const nameField = table?.getFieldIfExists('fldXXXXXXXXXX');
 
   return (
@@ -372,7 +372,7 @@ If a table or field you expect is missing from this output, it hasn't been enabl
 // Use fetch with the Airtable REST API for secondary tables.
 // Store credentials (e.g. API token) via custom properties (string type),
 // not hardcoded in source code.
-const fetchLinkedRecords = async (tableId: string, apiToken: string) => {
+const fetchLinkedRecords = async (baseId: string, tableId: string, apiToken: string) => {
   const response = await fetch(
     `https://api.airtable.com/v0/${baseId}/${tableId}`,
     { headers: { Authorization: `Bearer ${apiToken}` } }

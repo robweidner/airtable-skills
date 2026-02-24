@@ -31,8 +31,9 @@ Complete reference for all Airtable field types, their API support, and emoji ma
 | Created by | 👤 | Yes | No | Auto-populated |
 | Last modified by | 👤 | Yes | No | Auto-populated |
 | Autonumber | 🆔 | Yes | No | Auto-incrementing |
-| Barcode | | Yes | Yes | Barcode/QR |
+| Barcode | 📱 | Yes | Yes | Barcode/QR |
 | Button | 👊 | Limited | Limited | Triggers actions |
+| AI | 🪄 | Yes | Limited | AI-generated text |
 | Link to another record | 🔗 | Yes | Yes | Related records |
 
 ## Conditional Filtering on Count, Lookup, and Rollup Fields

@@ -162,42 +162,47 @@ import {
 } from '@airtable/blocks/interface/ui';
 import { FieldType } from '@airtable/blocks/interface/models';
 
-// Define properties OUTSIDE the component (stable identity required)
-const properties = (base: any) => ({
-    sourceTable: {
-        type: 'table' as const,
-        label: 'Source table',
-        description: 'The table to read records from',
-    },
-    nameField: {
-        type: 'field' as const,
-        label: 'Name field',
-        description: 'The field to use as the display name',
-        parentTable: 'sourceTable',
-        shouldFieldBeAllowed: (field: any) =>
-            field.type === FieldType.SINGLE_LINE_TEXT ||
-            field.type === FieldType.FORMULA,
-    },
-    statusField: {
-        type: 'field' as const,
-        label: 'Status field',
-        description: 'A single-select field for record status',
-        parentTable: 'sourceTable',
-        shouldFieldBeAllowed: (field: any) =>
-            field.type === FieldType.SINGLE_SELECT,
-    },
-    pageSize: {
-        type: 'number' as const,
-        label: 'Records per page',
-        description: 'How many records to show at once',
-    },
-});
+// Define properties OUTSIDE the component (stable identity required).
+// Returns an array of property definitions — matches the useCustomProperties API.
+const getCustomProperties = (base: any) => {
+    const defaultTable = base.tables[0];
+    return [
+        {
+            key: 'sourceTable',
+            type: 'table' as const,
+            label: 'Source table',
+            defaultValue: defaultTable,
+        },
+        {
+            key: 'nameField',
+            type: 'field' as const,
+            label: 'Name field',
+            table: defaultTable,
+            shouldFieldBeAllowed: (field: { id: string; config: { type: string } }) =>
+                field.config.type === FieldType.SINGLE_LINE_TEXT ||
+                field.config.type === FieldType.FORMULA,
+        },
+        {
+            key: 'statusField',
+            type: 'field' as const,
+            label: 'Status field',
+            table: defaultTable,
+            shouldFieldBeAllowed: (field: { id: string; config: { type: string } }) =>
+                field.config.type === FieldType.SINGLE_SELECT,
+        },
+        {
+            key: 'pageSize',
+            type: 'number' as const,
+            label: 'Records per page',
+        },
+    ];
+};
 
 function MyExtension() {
     const base = useBase();
-    const customProperties = useCustomProperties(properties);
+    const { customPropertyValueByKey } = useCustomProperties(getCustomProperties);
 
-    const { sourceTable, nameField, statusField, pageSize } = customProperties;
+    const { sourceTable, nameField, statusField, pageSize } = customPropertyValueByKey as any;
 
     // Show setup instructions when required properties are not configured
     if (!sourceTable || !nameField) {
@@ -385,7 +390,7 @@ import { useBase, useRecords } from '@airtable/blocks/interface/ui';
 function DataLoader() {
     const base = useBase();
     const table = base.getTableByIdIfExists('tblXXXXXXXXXX');
-    const records = table ? useRecords(table) : [];
+    const records = useRecords(table);
 
     if (!records || records.length === 0) {
         return <Spinner />;
@@ -582,7 +587,7 @@ When you need to branch logic (not just styling) based on the color scheme:
 import { useColorScheme } from '@airtable/blocks/interface/ui';
 
 function ChartWrapper() {
-    const colorScheme = useColorScheme();
+    const { colorScheme } = useColorScheme();
     const isDark = colorScheme === 'dark';
 
     // Use for dynamic values like chart colors, inline styles, or third-party libs

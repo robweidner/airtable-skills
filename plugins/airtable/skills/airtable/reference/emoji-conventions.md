@@ -58,6 +58,7 @@ Add these at the **start** of field names to indicate type.
 | Created by | 👤 | `👤 Created By` |
 | Last modified by | 👤 | `👤 Modified By` |
 | Autonumber | 🆔 | `🆔 ID` |
+| Barcode | 📱 | `📱 Product Code` |
 | Button | 👊 | `👊 Open Link` |
 | AI | 🪄 | `🪄 Summary` |
 
@@ -67,7 +68,7 @@ These indicate the **purpose** or **status** of a field, layered ON TOP OF type 
 
 | Purpose | Emoji | When to Use |
 |---------|-------|-------------|
-| Automation-involved | 🤖 | Fields read/written by automations |
+| Automation-involved | ⚡ | Fields read/written by automations |
 | Permissions | 🔒 | Access control fields |
 | Tested/Working | ✅ | Verified automation is working |
 | Work in progress | 👷 | Still being built |

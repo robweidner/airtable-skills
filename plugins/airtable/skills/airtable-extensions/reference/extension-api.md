@@ -78,17 +78,17 @@ import { useBase, useRecords } from '@airtable/blocks/interface/ui';
 function RecordList() {
   const base = useBase();
   const table = base.getTableByNameIfExists('Contacts');
-
-  // Returns all records visible through the interface Data panel
   const records = useRecords(table);
 
   if (!table) return <div>Table not available.</div>;
+
+  const nameField = table.getFieldIfExists('Name');
 
   return (
     <ul>
       {records.map((record) => (
         <li key={record.id}>
-          {record.getCellValueAsString(table.getFieldIfExists('Name'))}
+          {nameField ? record.getCellValueAsString(nameField) : record.name}
         </li>
       ))}
     </ul>

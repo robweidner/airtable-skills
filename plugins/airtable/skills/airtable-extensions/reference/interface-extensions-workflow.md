@@ -235,7 +235,7 @@ The Interface Extensions SDK does not natively support multiple tables. If your 
 ```jsx
 const AIRTABLE_API = 'https://api.airtable.com/v0';
 
-async function fetchFromTable(baseId, tableIdOrName, options = {}) {
+async function fetchFromTable(baseId, tableIdOrName, apiToken, options = {}) {
   const url = new URL(`${AIRTABLE_API}/${baseId}/${tableIdOrName}`);
   if (options.filterByFormula) {
     url.searchParams.set('filterByFormula', options.filterByFormula);
