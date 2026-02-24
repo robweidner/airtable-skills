@@ -52,7 +52,7 @@ claude plugin validate .
 
 ### Plugin root
 - `plugins/airtable/.claude-plugin/plugin.json`: plugin manifest (name/version/metadata). **Must** be inside `.claude-plugin/` per Claude Code plugin spec.
-- `plugins/airtable/.mcp.json`: bundled MCP server configuration that runs `@airtable/mcp-server` via `npx` and passes through `AIRTABLE_PAT`.
+- `plugins/airtable/.mcp.json`: bundled MCP server configuration that runs `airtable-mcp-server` via `npx` and passes through `AIRTABLE_PAT`.
 
 ### Skills layout
 Skills live under `plugins/airtable/skills/<skill-name>/`.
@@ -113,4 +113,4 @@ If you change preference behavior or add new preferences, update:
 Several skills encode Airtable API/MCP limitations and associated workarounds. If you change these, update both the skill instructions and references:
 - Bases cannot be created via API/MCP (user must create in UI and provide `app...` base ID).
 - Automations cannot be created via API/MCP (docs generate ASCII diagrams + click-by-click setup steps).
-- Formula/rollup/lookup fields cannot be created directly (docs use a `[convert]` marker + put the intended config in the field description).
+- Formula/rollup/lookup fields cannot be created directly (docs use a 🔧 marker + put the intended config in the field description).

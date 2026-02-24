@@ -155,19 +155,19 @@ Compare case-insensitively, flag if actual casing differs:
 
 ### Emoji Prefix Awareness
 
-The main Airtable skill uses emoji prefixes like `[email]`, `[date]`, `[link]`.
+The main Airtable skill uses emoji prefixes like `📧`, `📅`, `🔗`.
 
 **IMPORTANT:** Strip emoji prefixes before comparison to avoid false positives.
 
 ```javascript
-// Strip prefix pattern: [anything] at start of name
-const cleanName = fieldName.replace(/^\[[^\]]+\]\s*/, '');
+// Strip prefix pattern: emoji characters at start of name
+const cleanName = fieldName.replace(/^[\p{Emoji_Presentation}\p{Extended_Pictographic}\uFE0F]+\s*/gu, '');
 ```
 
 **Examples:**
-- `"[email] Email"` and `"Email"` are NOT duplicates (one has emoji prefix)
-- `"[email] Primary Email"` and `"[email] Contact Email"` - compare "Primary Email" vs "Contact Email"
-- `"[wip][formula] Sales"` - strip multiple prefixes: "Sales"
+- `"📧 Email"` and `"Email"` are NOT duplicates (one has emoji prefix)
+- `"📧 Primary Email"` and `"📧 Contact Email"` - compare "Primary Email" vs "Contact Email"
+- `"👷🤖 Sales"` - strip multiple prefixes: "Sales"
 
 ---
 

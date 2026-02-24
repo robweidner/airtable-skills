@@ -1,61 +1,94 @@
-# Airtable Extension API Reference
+# Airtable Interface Extensions SDK Reference
 
-SDK hooks and methods for building Airtable extensions.
+SDK hooks and methods for building Airtable Interface Extensions.
+
+> **Important:** This documents the Interface Extensions SDK, not the legacy Blocks SDK. The two APIs differ significantly in import paths, available hooks, and entry point signature.
+
+## Import Paths
+
+The Interface Extensions SDK exposes exactly two import paths:
+
+```tsx
+import {
+  initializeBlock,
+  useBase,
+  useRecords,
+  useCustomProperties,
+  useColorScheme,
+  useSession,
+  expandRecord,
+  colorUtils,
+} from '@airtable/blocks/interface/ui';
+
+import { FieldType } from '@airtable/blocks/interface/models';
+```
+
+Do NOT import UI primitives (Box, Button, Input, etc.) — they are not available in Interface Extensions. Use standard HTML elements and your own styles instead.
+
+## Entry Point
+
+```tsx
+import { initializeBlock } from '@airtable/blocks/interface/ui';
+
+function MyExtension() {
+  return <div>Hello from Interface Extensions</div>;
+}
+
+initializeBlock({ interface: () => <MyExtension /> });
+```
+
+The `{ interface: () => ... }` wrapper is required. Do NOT use the legacy form `initializeBlock(() => ...)`.
 
 ## Hooks
 
 ### useBase
 
-Access the current base.
+Access the current base. Only tables enabled in the interface's Data panel are visible.
 
-```jsx
-import { useBase } from '@airtable/blocks/ui';
+```tsx
+import { useBase } from '@airtable/blocks/interface/ui';
 
 function MyComponent() {
   const base = useBase();
 
-  // Get table by name
-  const table = base.getTableByName('Contacts');
+  // Safe lookups — return null when not found
+  const tableById = base.getTableByIdIfExists('tblXXXXXXXXXXXXXX');
+  const tableByName = base.getTableByNameIfExists('Contacts');
 
-  // Get table by ID
-  const table = base.getTableById('tblXXXXXXXXXXXXXX');
-
-  // List all tables
+  // Only tables enabled in the interface Data panel
   const tables = base.tables;
+
+  if (!tableByName) {
+    return <div>Contacts table not found or not enabled in Data panel.</div>;
+  }
 
   return <div>Base: {base.name}</div>;
 }
 ```
 
+**Do NOT use** `base.getTableByName()` or `base.getTableById()` — these throw errors when the table is missing. Always use the `IfExists` variants.
+
 ### useRecords
 
-Subscribe to records from a table or view.
+Subscribe to records from a table. The returned array updates reactively as records are created, edited, or deleted.
 
-```jsx
-import { useRecords } from '@airtable/blocks/ui';
+```tsx
+import { useBase, useRecords } from '@airtable/blocks/interface/ui';
 
 function RecordList() {
   const base = useBase();
-  const table = base.getTableByName('Contacts');
+  const table = base.getTableByNameIfExists('Contacts');
 
-  // All records
-  const allRecords = useRecords(table);
+  // Returns all records visible through the interface Data panel
+  const records = useRecords(table);
 
-  // From specific view
-  const view = table.getViewByName('Active');
-  const viewRecords = useRecords(view);
-
-  // With options
-  const records = useRecords(table, {
-    fields: ['Name', 'Email'],  // Only load these fields
-    sorts: [{ field: 'Name', direction: 'asc' }]
-  });
+  if (!table) return <div>Table not available.</div>;
 
   return (
     <ul>
-      {records.map(record => (
+      {records.map((record) => (
         <li key={record.id}>
-          {record.getCellValueAsString('Name')}
+          {record.getCellValueAsString(table.getFieldIfExists('Name'))}
         </li>
       ))}
     </ul>
@@ -63,121 +96,211 @@ function RecordList() {
 }
 ```
 
-### useRecordById
-
-Subscribe to a single record.
-
-```jsx
-import { useRecordById } from '@airtable/blocks/ui';
-
-function RecordDetail({ recordId }) {
-  const base = useBase();
-  const table = base.getTableByName('Contacts');
-  const record = useRecordById(table, recordId);
-
-  if (!record) return <div>Loading...</div>;
-
-  return (
-    <div>
-      <h1>{record.getCellValueAsString('Name')}</h1>
-      <p>{record.getCellValueAsString('Email')}</p>
-    </div>
-  );
-}
-```
-
-### useGlobalConfig
-
-Store and retrieve extension settings.
-
-```jsx
-import { useGlobalConfig } from '@airtable/blocks/ui';
-
-function Settings() {
-  const globalConfig = useGlobalConfig();
-
-  // Read value
-  const setting = globalConfig.get('mySetting');
-
-  // Write value
-  const saveSetting = async (value) => {
-    await globalConfig.setAsync('mySetting', value);
-  };
-
-  // Check if can write
-  const canEdit = globalConfig.hasPermissionToSet('mySetting');
-
-  return (
-    <Input
-      value={setting || ''}
-      onChange={e => saveSetting(e.target.value)}
-      disabled={!canEdit}
-    />
-  );
-}
-```
+Records may change at any time — components re-render automatically when the underlying data changes.
 
 ### useSession
 
-Get current user info.
+Get current user information.
 
-```jsx
-import { useSession } from '@airtable/blocks/ui';
+```tsx
+import { useSession } from '@airtable/blocks/interface/ui';
 
 function UserInfo() {
   const session = useSession();
+  const user = session.currentUser;
 
   return (
     <div>
-      Current user: {session.currentUser.name}
-      Email: {session.currentUser.email}
+      <p>Name: {user.name}</p>
+      <p>Email: {user.email}</p>
+      <p>ID: {user.id}</p>
+      {user.profilePicUrl && <img src={user.profilePicUrl} alt={user.name} />}
     </div>
   );
 }
 ```
 
-### useViewport
+`currentUser` provides `email`, `id`, `name`, and an optional `profilePicUrl`.
 
-Respond to extension viewport size.
+### useColorScheme
 
-```jsx
-import { useViewport } from '@airtable/blocks/ui';
+Detect whether the interface is using dark or light mode.
 
-function ResponsiveLayout() {
-  const viewport = useViewport();
+```tsx
+import { useColorScheme } from '@airtable/blocks/interface/ui';
 
-  // Check size
-  if (viewport.size.width < 400) {
-    return <CompactView />;
-  }
+function ThemedCard() {
+  const { colorScheme } = useColorScheme();
 
-  return <FullView />;
+  const style = {
+    backgroundColor: colorScheme === 'dark' ? '#1a1a2e' : '#ffffff',
+    color: colorScheme === 'dark' ? '#e0e0e0' : '#333333',
+    padding: '16px',
+    borderRadius: '8px',
+  };
+
+  return <div style={style}>This card responds to the interface theme.</div>;
 }
 ```
 
-### useCursor
+Returns `{ colorScheme: 'dark' | 'light' }`.
 
-Track selected records/fields.
+### useCustomProperties
 
-```jsx
-import { useCursor } from '@airtable/blocks/ui';
+Custom properties replace `useGlobalConfig` from the Blocks SDK. They let builders configure an extension differently on each interface page.
 
-function SelectionInfo() {
-  const cursor = useCursor();
+```tsx
+import { useCallback } from 'react';
+import {
+  useBase,
+  useCustomProperties,
+} from '@airtable/blocks/interface/ui';
+import { FieldType } from '@airtable/blocks/interface/models';
 
-  // Currently selected record IDs
-  const selectedRecordIds = cursor.selectedRecordIds;
+function MyExtension() {
+  const base = useBase();
 
-  // Currently selected field IDs
-  const selectedFieldIds = cursor.selectedFieldIds;
+  // Define properties — wrap in useCallback for stable identity
+  const getCustomProperties = useCallback(
+    (base) => {
+      const table = base.getTableByIdIfExists('tblXXXXXXXXXXXXXX');
+      return [
+        {
+          key: 'showArchived',
+          label: 'Show archived items',
+          type: 'boolean' as const,
+          defaultValue: false,
+        },
+        {
+          key: 'displayMode',
+          label: 'Display mode',
+          type: 'enum' as const,
+          possibleValues: [
+            { value: 'grid', label: 'Grid' },
+            { value: 'list', label: 'List' },
+          ],
+          defaultValue: 'grid',
+        },
+        {
+          key: 'nameField',
+          label: 'Name field',
+          type: 'field' as const,
+          table: table!,
+          shouldFieldBeAllowed: (field: { id: string; config: any }) =>
+            field.config.type === FieldType.SINGLE_LINE_TEXT,
+          defaultValue: table?.getFieldIfExists('fldXXXXXXXXXXXXXX'),
+        },
+        {
+          key: 'sourceTable',
+          label: 'Source table',
+          type: 'table' as const,
+          defaultValue: table,
+        },
+      ];
+    },
+    [],
+  );
 
-  // Active table/view
-  const activeTableId = cursor.activeTableId;
-  const activeViewId = cursor.activeViewId;
+  const { customPropertyValueByKey, errorState } =
+    useCustomProperties(getCustomProperties);
+
+  if (errorState) {
+    return <div>Configuration error — check the extension settings.</div>;
+  }
+
+  const showArchived = customPropertyValueByKey.showArchived as boolean;
+  const displayMode = customPropertyValueByKey.displayMode as string;
 
   return (
     <div>
-      {selectedRecordIds.length} records selected
+      <p>Display mode: {displayMode}</p>
+      <p>Show archived: {showArchived ? 'Yes' : 'No'}</p>
+    </div>
+  );
+}
+```
+
+**Property types:**
+
+| Type | Extra fields |
+|------|-------------|
+| `boolean` | `defaultValue: boolean` (required) |
+| `string` | `defaultValue?: string` |
+| `enum` | `possibleValues: Array<{value: string; label: string}>`, `defaultValue?: string` |
+| `field` | `table: Table`, `shouldFieldBeAllowed?: (field) => boolean`, `defaultValue?: Field` |
+| `table` | `defaultValue?: Table` |
+
+Full type definition:
+
+```ts
+type BlockPageElementCustomProperty = { key: string; label: string } & (
+  | { type: 'boolean'; defaultValue: boolean }
+  | { type: 'string'; defaultValue?: string }
+  | { type: 'enum'; possibleValues: Array<{ value: string; label: string }>; defaultValue?: string }
+  | { type: 'field'; table: Table; shouldFieldBeAllowed?: (field: { id: FieldId; config: FieldConfig }) => boolean; defaultValue?: Field }
+  | { type: 'table'; defaultValue?: Table }
+);
+```
+
+**Guidelines:**
+- Use custom properties for values that vary between implementations (which field to display, which table to read from).
+- Hardcode stable table/field IDs directly when the value never changes.
+- Wrap `getCustomProperties` in `useCallback` or define it outside the component to maintain a stable reference.
+
+### expandRecord
+
+Open the built-in Record Detail page for a record.
+
+```tsx
+import { useBase, useRecords, expandRecord } from '@airtable/blocks/interface/ui';
+
+function RecordList() {
+  const base = useBase();
+  const table = base.getTableByNameIfExists('Contacts');
+  const records = useRecords(table);
+
+  if (!table) return null;
+
+  const canExpand = table.hasPermissionToExpandRecords();
+
+  return (
+    <ul>
+      {records.map((record) => (
+        <li key={record.id}>
+          {record.getCellValueAsString(table.getFieldIfExists('Name'))}
+          {canExpand && (
+            <button onClick={() => expandRecord(record)}>View details</button>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+Check `table.hasPermissionToExpandRecords()` before rendering UI that opens record details. This is the preferred approach over building custom detail popovers.
+
+### colorUtils
+
+Convert Airtable color names to hex values and determine text contrast.
+
+```tsx
+import { colorUtils } from '@airtable/blocks/interface/ui';
+
+function ColorSwatch({ color }: { color: string }) {
+  const hex = colorUtils.getHexForColor(color);
+  const useLightText = colorUtils.shouldUseLightTextOnColor(color);
+
+  return (
+    <div
+      style={{
+        backgroundColor: hex,
+        color: useLightText ? '#ffffff' : '#000000',
+        padding: '8px 12px',
+        borderRadius: '4px',
+      }}
+    >
+      {color}
     </div>
   );
 }
@@ -187,169 +310,213 @@ function SelectionInfo() {
 
 ### Reading Values
 
-```jsx
-// Get cell value (native type)
-const name = record.getCellValue('Name');
-// Returns: string, number, array, object, or null depending on field type
+```tsx
+// Get the field object safely
+const nameField = table.getFieldIfExists('Name');
 
-// Get as string (for display)
-const nameStr = record.getCellValueAsString('Name');
-// Always returns string
+// Get cell value (native type — string, number, array, object, or null)
+const name = nameField ? record.getCellValue(nameField) : null;
 
-// Get record ID
+// Get as string (for display — always returns a string)
+const nameStr = nameField ? record.getCellValueAsString(nameField) : '';
+
+// Record ID
 const id = record.id;
 
-// Get record name (primary field)
-const name = record.name;
+// Record name (primary field value)
+const displayName = record.name;
 ```
+
+Always check that the field exists before reading cell values.
 
 ### Field Type Values
 
-| Field Type | getCellValue returns |
-|------------|---------------------|
-| Text | `string` or `null` |
-| Number | `number` or `null` |
+| Field Type | `getCellValue` returns |
+|------------|----------------------|
+| Text fields | `string` or `null` |
+| Number / Currency / Percent | `number` or `null` |
 | Checkbox | `boolean` or `null` |
 | Single Select | `{id, name, color}` or `null` |
 | Multiple Select | `[{id, name, color}, ...]` or `null` |
-| User | `{id, email, name}` or `null` |
-| Date | `string` (ISO) or `null` |
+| Collaborator | `{id, email, name}` or `null` |
+| Date / DateTime | `string` (ISO 8601) or `null` |
 | Linked Records | `[{id, name}, ...]` or `null` |
 | Attachments | `[{id, url, filename, ...}, ...]` or `null` |
+
+**Select fields:** `getCellValue` returns an object with `id`, `name`, and `color`. Render the `name` property — do not render the object directly.
+
+```tsx
+const status = record.getCellValue(statusField);
+// status = { id: 'selXXX', name: 'In Progress', color: 'greenLight2' }
+// Render status.name, not status itself
+```
 
 ## Table Methods
 
 ### Create Records
 
-```jsx
+```tsx
 // Create single record
 const recordId = await table.createRecordAsync({
-  'Name': 'John Doe',
-  'Email': 'john@example.com'
+  Name: 'John Doe',
+  Email: 'john@example.com',
 });
 
-// Create multiple records (max 50)
+// Create multiple records (max 50 per call)
 const recordIds = await table.createRecordsAsync([
-  { fields: { 'Name': 'John' } },
-  { fields: { 'Name': 'Jane' } }
+  { fields: { Name: 'John' } },
+  { fields: { Name: 'Jane' } },
 ]);
 ```
 
 ### Update Records
 
-```jsx
+```tsx
 // Update single record
-await table.updateRecordAsync(recordId, {
-  'Status': { name: 'Complete' }
+await table.updateRecordAsync(recordOrRecordId, {
+  Status: { name: 'Complete' },
 });
 
-// Update multiple records (max 50)
+// Update multiple records (max 50 per call)
 await table.updateRecordsAsync([
-  { id: recordId1, fields: { 'Status': { name: 'Complete' } } },
-  { id: recordId2, fields: { 'Status': { name: 'Complete' } } }
+  { id: recordId1, fields: { Status: { name: 'Complete' } } },
+  { id: recordId2, fields: { Status: { name: 'Complete' } } },
 ]);
 ```
 
 ### Delete Records
 
-```jsx
+```tsx
 // Delete single record
-await table.deleteRecordAsync(recordId);
+await table.deleteRecordAsync(recordOrRecordId);
 
-// Delete multiple records (max 50)
+// Delete multiple records (max 50 per call)
 await table.deleteRecordsAsync([recordId1, recordId2]);
+```
+
+### Fetch Foreign Records
+
+For linked record fields, fetch the records from the linked table:
+
+```tsx
+const linkedRecords = await record.fetchForeignRecordsAsync(linkedField, filterString);
+// Returns { records: [{ displayName, id }, ...] }
 ```
 
 ### Check Permissions
 
-```jsx
-// Check if can create
-const canCreate = table.hasPermissionToCreateRecord({
-  'Name': 'Test'
-});
+Always check permissions before write operations:
 
-// Check if can update
-const canUpdate = table.hasPermissionToUpdateRecord(record, {
-  'Status': { name: 'Complete' }
-});
+```tsx
+// Check create permission
+if (table.hasPermissionToCreateRecords([{ fields: { Name: 'Test' } }])) {
+  await table.createRecordAsync({ Name: 'Test' });
+}
 
-// Check if can delete
-const canDelete = table.hasPermissionToDeleteRecord(record);
+// Check update permission
+if (table.hasPermissionToUpdateRecords([{ id: record.id, fields: { Status: { name: 'Done' } } }])) {
+  await table.updateRecordAsync(record, { Status: { name: 'Done' } });
+}
+
+// Check delete permission
+if (table.hasPermissionToDeleteRecords([record.id])) {
+  await table.deleteRecordAsync(record);
+}
 ```
 
 ## Field Access
 
-```jsx
-const table = base.getTableByName('Contacts');
+```tsx
+import { FieldType } from '@airtable/blocks/interface/models';
 
-// Get field by name
-const field = table.getFieldByName('Email');
+const table = base.getTableByNameIfExists('Contacts');
+if (!table) return null;
 
-// Get field by ID
-const field = table.getFieldById('fldXXXXXXXXXXXXXX');
+// Safe field lookup — returns null if field not found
+const emailField = table.getFieldIfExists('Email');
 
-// List all fields
-const fields = table.fields;
+if (!emailField) {
+  return <div>Email field not found.</div>;
+}
 
 // Field properties
-console.log(field.name);        // "Email"
-console.log(field.type);        // "email"
-console.log(field.id);          // "fldXXX..."
-console.log(field.description); // Field description or null
+console.log(emailField.name); // "Email"
+console.log(emailField.type); // FieldType enum value
+console.log(emailField.id);   // "fldXXX..."
 
-// For select fields, get options
-if (field.type === 'singleSelect') {
-  const options = field.options.choices;
+// Compare field types using the FieldType enum — NEVER use string literals
+if (emailField.type === FieldType.EMAIL) {
+  console.log('This is an email field');
+}
+
+// For select fields
+const statusField = table.getFieldIfExists('Status');
+if (statusField && statusField.type === FieldType.SINGLE_SELECT) {
+  const options = statusField.options.choices;
   // [{id, name, color}, ...]
 }
 ```
 
-## View Access
+**Do NOT use** `table.getField()`, `table.getFieldByName()`, or `table.getFieldById()` — these throw errors. Always use `table.getFieldIfExists()`.
 
-```jsx
-const table = base.getTableByName('Contacts');
+### FieldType Enum Values
 
-// Get view by name
-const view = table.getViewByName('Active Contacts');
-
-// Get view by ID
-const view = table.getViewById('viwXXXXXXXXXXXXXX');
-
-// List all views
-const views = table.views;
-
-// View properties
-console.log(view.name);  // "Active Contacts"
-console.log(view.type);  // "grid", "calendar", "kanban", etc.
 ```
+AI_TEXT              AUTO_NUMBER          BARCODE
+BUTTON               CHECKBOX             COUNT
+CREATED_BY           CREATED_TIME         CURRENCY
+DATE                 DATE_TIME            DURATION
+EMAIL                EXTERNAL_SYNC_SOURCE FORMULA
+LAST_MODIFIED_BY     LAST_MODIFIED_TIME   MULTILINE_TEXT
+MULTIPLE_ATTACHMENTS MULTIPLE_COLLABORATORS MULTIPLE_LOOKUP_VALUES
+MULTIPLE_RECORD_LINKS MULTIPLE_SELECTS    NUMBER
+PERCENT              PHONE_NUMBER         RATING
+RICH_TEXT            ROLLUP               SINGLE_COLLABORATOR
+SINGLE_LINE_TEXT     SINGLE_SELECT        URL
+```
+
+Always import `FieldType` from `@airtable/blocks/interface/models` and compare using the enum (e.g., `FieldType.SINGLE_SELECT`), never against raw strings.
 
 ## Async Considerations
 
-All write operations are async:
+All write operations are async and rate-limited to 15 calls per second.
 
-```jsx
-async function handleSave() {
+```tsx
+async function handleSave(table: any, fields: Record<string, unknown>) {
   try {
+    if (!table.hasPermissionToCreateRecords()) {
+      console.error('No permission to create records');
+      return;
+    }
     await table.createRecordAsync(fields);
     console.log('Created successfully');
   } catch (error) {
-    console.error('Create failed:', error.message);
+    console.error('Create failed:', (error as Error).message);
   }
 }
 ```
 
-**Batch limits:** 50 records per create/update/delete call.
+**Batch limits:** 50 records per `createRecordsAsync` / `updateRecordsAsync` / `deleteRecordsAsync` call.
 
-For more than 50:
-```jsx
-async function batchUpdate(records) {
-  const batches = [];
-  for (let i = 0; i < records.length; i += 50) {
-    batches.push(records.slice(i, i + 50));
-  }
+For more than 50 records, batch the operations:
 
-  for (const batch of batches) {
-    await table.updateRecordsAsync(batch);
+```tsx
+async function batchCreate(
+  table: any,
+  recordFields: Array<{ fields: Record<string, unknown> }>,
+) {
+  for (let i = 0; i < recordFields.length; i += 50) {
+    const batch = recordFields.slice(i, i + 50);
+    await table.createRecordsAsync(batch);
   }
 }
 ```
+
+## Hooks NOT Available in Interface Extensions
+
+The following hooks exist only in the legacy Blocks SDK and must **not** be used:
+
+- `useViewport` — no viewport API in Interface Extensions
+- `useCursor` — no cursor/selection tracking
+- `useRecordById` — not available; filter from `useRecords` instead
+- `useGlobalConfig` — replaced by `useCustomProperties`

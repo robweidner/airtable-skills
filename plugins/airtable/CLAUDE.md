@@ -61,7 +61,7 @@ These cannot be done via API/MCP:
 ## Formula Field Workaround
 
 When creating formula fields, the skill:
-1. Creates as Single Line Text with `[convert]` prefix
+1. Creates as Single Line Text with 🔧 prefix
 2. Puts formula in field description
 3. Outputs checklist of fields needing manual conversion
 

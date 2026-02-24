@@ -23,7 +23,7 @@ Before installing, make sure you have:
 
 - [ ] **Claude Code** installed and authenticated ([setup guide](https://code.claude.com/docs/en/quickstart))
 - [ ] **Claude Code v1.0.33+** — run `claude --version` to check. If below 1.0.33, update first.
-- [ ] **Node.js 18+** — required for the Airtable MCP server (`npx @airtable/mcp-server`)
+- [ ] **Node.js 18+** — required for the Airtable MCP server (`npx airtable-mcp-server`)
 - [ ] **An Airtable account** with a Team, Business, or Enterprise plan (for extension development; schema/scripting works on any plan)
 
 ## Quick Start
@@ -139,7 +139,7 @@ The Airtable API has known limitations. This skill handles them automatically:
 | Can't Create via API | Workaround |
 |---------------------|------------|
 | **Bases** | User creates manually, provides base ID |
-| **Formula fields** | Creates as text with `[convert]` marker, formula in description |
+| **Formula fields** | Creates as text with 🔧 marker, formula in description |
 | **Rollup fields** | Same as formula |
 | **Lookup fields** | Same as formula |
 | **Automations** | Generates ASCII flow diagrams + setup steps |
@@ -151,17 +151,16 @@ After API operations, you get a checklist of manual conversions needed.
 Visual field identification at a glance:
 
 ```
-📝 Name           [text]
-📧 Email          [email]
-🔢 Quantity       [number]
-💰 Total          [currency]
-📅 Due Date       [date]
-🔗 Company        [link]
-📊 Status         [select]
-🧮 Full Name      [formula]
+🔗 Company
+📧 Email
+#️⃣ Quantity
+💰 Total
+📅 Due Date
+1️⃣ Status
+🤖 Full Name
 ```
 
-Stack markers for context: `[wip][formula] Commission Calc`
+Stack markers for context: `👷🤖 Commission Calc`
 
 ## Example Prompts
 
@@ -245,7 +244,7 @@ When `airtable_use_field_ids: true`, the skill:
 | "Base ID required" | Create base in Airtable UI, provide `appXXXXXX` ID |
 | Field names are case-sensitive | Use field IDs instead |
 | Linked records fail | Create the linked table first |
-| Formula field not created | Use the `[convert]` workaround |
+| Formula field not created | Use the 🔧 workaround |
 | Rate limited | Skill handles this — uses exponential backoff |
 | Extension out of sync with repo | Set up the auto-release Claude Code hook (see `/airtable:airtable-extensions`) |
 | `block run` won't connect in Chrome | Check CORS flags — see Interface Extensions troubleshooting |

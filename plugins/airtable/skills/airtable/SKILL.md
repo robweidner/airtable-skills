@@ -66,27 +66,27 @@ airtable_use_field_ids: true
 2. **Apply emoji conventions** (based on preference):
    - Load [emoji-conventions.md](reference/emoji-conventions.md) for the full mapping
    - Field type emojis go at the START of field names
-   - Status emojis can stack: `[wip][formula] Sales Commission`
+   - Status emojis can stack: `👷🤖 Sales Commission`
 
 3. **Handle formula fields (API LIMITATION):**
    The Airtable API cannot create formula, rollup, or lookup fields directly.
 
    **Workaround:**
    - Create as Single Line Text field
-   - Prefix with `[convert]` marker in the name
+   - Prefix with `🔧` marker in the name
    - Put the formula in the field DESCRIPTION
    - Output a checklist of fields needing manual conversion
 
    Example:
    ```
-   Field name: [convert][formula] Full Name
+   Field name: 🔧🤖 Full Name
    Description: CONCATENATE({First Name}, " ", {Last Name})
    ```
 
    After creation, remind user:
    ```
    Fields needing manual conversion:
-   [ ] [convert][formula] Full Name -> Convert to Formula, use: CONCATENATE({First Name}, " ", {Last Name})
+   [ ] 🔧🤖 Full Name -> Convert to Formula, use: CONCATENATE({First Name}, " ", {Last Name})
    ```
 
 4. **Store field IDs in descriptions** (if preference enabled):

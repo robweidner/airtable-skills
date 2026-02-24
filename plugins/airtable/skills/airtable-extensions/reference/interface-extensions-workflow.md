@@ -100,34 +100,33 @@ This is the #1 source of bugs in interface extension development. The interface'
 
 Drop this into your extension to see exactly what's available:
 
-```jsx
+```tsx
 import React from 'react';
 import { useBase } from '@airtable/blocks/interface/ui';
-import { Box, Text, Heading } from '@airtable/blocks/ui';
 
 function DataDiagnostic() {
   const base = useBase();
 
   return (
-    <Box padding={3}>
-      <Heading size="small">Data Sources Available to Extension</Heading>
-      <Text textColor="light" marginBottom={2}>
+    <div className="p-4">
+      <h3 className="text-sm font-bold mb-1">Data Sources Available to Extension</h3>
+      <p className="text-xs text-gray-400 mb-3">
         Tables: {base.tables.length} | If something is missing, enable it in the interface Data panel
-      </Text>
+      </p>
       {base.tables.map(table => (
-        <Box key={table.id} marginTop={2} padding={2} border="default" borderRadius="default">
-          <Text fontWeight="bold">{table.name}</Text>
-          <Text fontSize="small" textColor="light">{table.id}</Text>
-          <Box marginLeft={3} marginTop={1}>
+        <div key={table.id} className="mt-2 p-2 border rounded">
+          <p className="font-bold">{table.name}</p>
+          <p className="text-xs text-gray-400">{table.id}</p>
+          <div className="ml-4 mt-1">
             {table.fields.map(field => (
-              <Text key={field.id} fontSize="small">
+              <p key={field.id} className="text-xs">
                 {field.name} ({field.type}) — {field.id}
-              </Text>
+              </p>
             ))}
-          </Box>
-        </Box>
+          </div>
+        </div>
       ))}
-    </Box>
+    </div>
   );
 }
 
@@ -254,7 +253,7 @@ async function fetchFromTable(baseId, tableIdOrName, options = {}) {
 }
 ```
 
-**Note:** This requires storing an API token in `globalConfig` or environment — the SDK's built-in hooks only access interface-enabled data.
+**Note:** Store the API token via `useCustomProperties` (define a string-type custom property in your extension config) rather than `globalConfig`, which is not available in interface extensions. The SDK's built-in hooks only access interface-enabled data.
 
 ---
 

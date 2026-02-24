@@ -7,33 +7,33 @@ Complete reference for all Airtable field types, their API support, and emoji ma
 | Field Type | Emoji | Can Create via API | Can Modify via API | Notes |
 |------------|-------|-------------------|-------------------|-------|
 | Single line text | (none) | Yes | Yes | Basic text field |
-| Long text | [text] | Yes | Yes | Rich text supported |
-| Attachment | [attach] | Yes | Yes | URLs to files |
-| Checkbox | [check] | Yes | Yes | Boolean |
-| Multiple select | [multi] | Yes | Yes | Define options on create |
-| Single select | [select] | Yes | Yes | Define options on create |
-| User | [user] | Yes | Limited | Collaborator field |
-| Date | [date] | Yes | Yes | With optional time |
-| Phone number | [phone] | Yes | Yes | Formatted phone |
-| Email | [email] | Yes | Yes | Email validation |
-| URL | [url] | Yes | Yes | URL validation |
-| Number | [num] | Yes | Yes | Integer or decimal |
-| Currency | [money] | Yes | Yes | With currency symbol |
-| Percent | [pct] | Yes | Yes | Displayed as % |
-| Duration | [time] | Yes | Yes | h:mm:ss format |
-| Rating | [star] | Yes | Yes | 1-10 scale |
-| Formula | [formula] | **No** | **No** | Use workaround |
-| Rollup | [rollup] | **No** | **No** | Use workaround |
-| Count | [count] | Yes | Limited | Counts linked records (supports conditional filtering) |
-| Lookup | [lookup] | **No** | **No** | Use workaround |
-| Created time | [created] | Yes | No | Auto-populated |
-| Last modified time | [modified] | Yes | No | Auto-populated |
-| Created by | [user] | Yes | No | Auto-populated |
-| Last modified by | [user] | Yes | No | Auto-populated |
-| Autonumber | [auto] | Yes | No | Auto-incrementing |
-| Barcode | [barcode] | Yes | Yes | Barcode/QR |
-| Button | [button] | Limited | Limited | Triggers actions |
-| Link to another record | [link] | Yes | Yes | Related records |
+| Long text | 📝 | Yes | Yes | Rich text supported |
+| Attachment | 📎 | Yes | Yes | URLs to files |
+| Checkbox | ☑️ | Yes | Yes | Boolean |
+| Multiple select | 🔢 | Yes | Yes | Define options on create |
+| Single select | 1️⃣ | Yes | Yes | Define options on create |
+| User | 👤 | Yes | Limited | Collaborator field |
+| Date | 📅 | Yes | Yes | With optional time |
+| Phone number | 📞 | Yes | Yes | Formatted phone |
+| Email | 📧 | Yes | Yes | Email validation |
+| URL | 🌍 | Yes | Yes | URL validation |
+| Number | #️⃣ | Yes | Yes | Integer or decimal |
+| Currency | 💰 | Yes | Yes | With currency symbol |
+| Percent | 📊 | Yes | Yes | Displayed as % |
+| Duration | ⏱️ | Yes | Yes | h:mm:ss format |
+| Rating | ⭐ | Yes | Yes | 1-10 scale |
+| Formula | 🤖 | **No** | **No** | Use workaround |
+| Rollup | 🤖 | **No** | **No** | Use workaround |
+| Count | 🧮 | Yes | Limited | Counts linked records (supports conditional filtering) |
+| Lookup | 🔎 | **No** | **No** | Use workaround |
+| Created time | 📅 | Yes | No | Auto-populated |
+| Last modified time | 📅 | Yes | No | Auto-populated |
+| Created by | 👤 | Yes | No | Auto-populated |
+| Last modified by | 👤 | Yes | No | Auto-populated |
+| Autonumber | 🆔 | Yes | No | Auto-incrementing |
+| Barcode | | Yes | Yes | Barcode/QR |
+| Button | 👊 | Limited | Limited | Triggers actions |
+| Link to another record | 🔗 | Yes | Yes | Related records |
 
 ## Conditional Filtering on Count, Lookup, and Rollup Fields
 
@@ -58,13 +58,13 @@ These fields require manual creation or the workaround pattern:
 
 **Workaround:**
 1. Create as `singleLineText` field
-2. Add `[convert]` prefix to name
+2. Add `🔧` prefix to name
 3. Put formula in field description
 4. After API creation, manually convert field type and paste formula
 
 ```json
 {
-  "name": "[convert][formula] Full Name",
+  "name": "🔧🤖 Full Name",
   "type": "singleLineText",
   "description": "CONVERT TO FORMULA: CONCATENATE({First Name}, \" \", {Last Name})"
 }
@@ -77,7 +77,7 @@ These fields require manual creation or the workaround pattern:
 
 ```json
 {
-  "name": "[convert][rollup] Total Orders",
+  "name": "🔧🤖 Total Orders",
   "type": "singleLineText",
   "description": "CONVERT TO ROLLUP: Link field: Orders, Summarize: COUNT(values)"
 }
@@ -90,7 +90,7 @@ These fields require manual creation or the workaround pattern:
 
 ```json
 {
-  "name": "[convert][lookup] Customer Email",
+  "name": "🔧🔎 Customer Email",
   "type": "singleLineText",
   "description": "CONVERT TO LOOKUP: Link field: Customer, Field: Email"
 }
@@ -109,7 +109,7 @@ These fields require manual creation or the workaround pattern:
 ### Long Text (Rich Text)
 ```json
 {
-  "name": "[text] Description",
+  "name": "📝 Description",
   "type": "multilineText"
 }
 ```
@@ -118,7 +118,7 @@ Supports markdown formatting when rich text is enabled.
 ### Attachment
 ```json
 {
-  "name": "[attach] Documents",
+  "name": "📎 Documents",
   "type": "multipleAttachments"
 }
 ```
@@ -127,7 +127,7 @@ When creating records, provide array of `{url: "..."}` objects.
 ### Checkbox
 ```json
 {
-  "name": "[check] Completed",
+  "name": "☑️ Completed",
   "type": "checkbox",
   "options": {
     "icon": "check",
@@ -139,7 +139,7 @@ When creating records, provide array of `{url: "..."}` objects.
 ### Multiple Select
 ```json
 {
-  "name": "[multi] Tags",
+  "name": "🔢 Tags",
   "type": "multipleSelects",
   "options": {
     "choices": [
@@ -155,7 +155,7 @@ When creating records, provide array of `{url: "..."}` objects.
 ### Single Select
 ```json
 {
-  "name": "[select] Status",
+  "name": "1️⃣ Status",
   "type": "singleSelect",
   "options": {
     "choices": [
@@ -170,7 +170,7 @@ When creating records, provide array of `{url: "..."}` objects.
 ### User (Collaborator)
 ```json
 {
-  "name": "[user] Assignee",
+  "name": "👤 Assignee",
   "type": "singleCollaborator"
 }
 ```
@@ -179,7 +179,7 @@ For multiple users, use `multipleCollaborators`.
 ### Date
 ```json
 {
-  "name": "[date] Due Date",
+  "name": "📅 Due Date",
   "type": "date",
   "options": {
     "dateFormat": {
@@ -191,7 +191,7 @@ For multiple users, use `multipleCollaborators`.
 With time:
 ```json
 {
-  "name": "[date] Meeting Time",
+  "name": "📅 Meeting Time",
   "type": "dateTime",
   "options": {
     "dateFormat": {"name": "local"},
@@ -204,7 +204,7 @@ With time:
 ### Phone Number
 ```json
 {
-  "name": "[phone] Phone",
+  "name": "📞 Phone",
   "type": "phoneNumber"
 }
 ```
@@ -212,7 +212,7 @@ With time:
 ### Email
 ```json
 {
-  "name": "[email] Email",
+  "name": "📧 Email",
   "type": "email"
 }
 ```
@@ -220,7 +220,7 @@ With time:
 ### URL
 ```json
 {
-  "name": "[url] Website",
+  "name": "🌍 Website",
   "type": "url"
 }
 ```
@@ -228,7 +228,7 @@ With time:
 ### Number
 ```json
 {
-  "name": "[num] Quantity",
+  "name": "#️⃣ Quantity",
   "type": "number",
   "options": {
     "precision": 0
@@ -240,7 +240,7 @@ For decimals, set precision (0-8).
 ### Currency
 ```json
 {
-  "name": "[money] Price",
+  "name": "💰 Price",
   "type": "currency",
   "options": {
     "precision": 2,
@@ -252,7 +252,7 @@ For decimals, set precision (0-8).
 ### Percent
 ```json
 {
-  "name": "[pct] Progress",
+  "name": "📊 Progress",
   "type": "percent",
   "options": {
     "precision": 0
@@ -263,7 +263,7 @@ For decimals, set precision (0-8).
 ### Duration
 ```json
 {
-  "name": "[time] Time Spent",
+  "name": "⏱️ Time Spent",
   "type": "duration",
   "options": {
     "durationFormat": "h:mm"
@@ -275,7 +275,7 @@ Formats: `h:mm`, `h:mm:ss`, `h:mm:ss.S`, `h:mm:ss.SS`, `h:mm:ss.SSS`
 ### Rating
 ```json
 {
-  "name": "[star] Priority",
+  "name": "⭐ Priority",
   "type": "rating",
   "options": {
     "max": 5,
@@ -288,7 +288,7 @@ Formats: `h:mm`, `h:mm:ss`, `h:mm:ss.S`, `h:mm:ss.SS`, `h:mm:ss.SSS`
 ### Link to Another Record
 ```json
 {
-  "name": "[link] Company",
+  "name": "🔗 Company",
   "type": "multipleRecordLinks",
   "options": {
     "linkedTableId": "tblXXXXXXXXXXXXXX"
@@ -300,13 +300,13 @@ Formats: `h:mm`, `h:mm:ss`, `h:mm:ss.S`, `h:mm:ss.SS`, `h:mm:ss.SSS`
 ### Created Time / Last Modified Time
 ```json
 {
-  "name": "[created] Created",
+  "name": "📅 Created",
   "type": "createdTime"
 }
 ```
 ```json
 {
-  "name": "[modified] Updated",
+  "name": "📅 Updated",
   "type": "lastModifiedTime"
 }
 ```
@@ -314,13 +314,13 @@ Formats: `h:mm`, `h:mm:ss`, `h:mm:ss.S`, `h:mm:ss.SS`, `h:mm:ss.SSS`
 ### Created By / Last Modified By
 ```json
 {
-  "name": "[user] Created By",
+  "name": "👤 Created By",
   "type": "createdBy"
 }
 ```
 ```json
 {
-  "name": "[user] Modified By",
+  "name": "👤 Modified By",
   "type": "lastModifiedBy"
 }
 ```
@@ -328,7 +328,7 @@ Formats: `h:mm`, `h:mm:ss`, `h:mm:ss.S`, `h:mm:ss.SS`, `h:mm:ss.SSS`
 ### Autonumber
 ```json
 {
-  "name": "[auto] ID",
+  "name": "🆔 ID",
   "type": "autoNumber"
 }
 ```
@@ -336,7 +336,7 @@ Formats: `h:mm`, `h:mm:ss`, `h:mm:ss.S`, `h:mm:ss.SS`, `h:mm:ss.SSS`
 ### Barcode
 ```json
 {
-  "name": "[barcode] Product Code",
+  "name": "Product Code",
   "type": "barcode"
 }
 ```
@@ -344,7 +344,7 @@ Formats: `h:mm`, `h:mm:ss`, `h:mm:ss.S`, `h:mm:ss.SS`, `h:mm:ss.SSS`
 ### Button
 ```json
 {
-  "name": "[button] Open URL",
+  "name": "👊 Open URL",
   "type": "button",
   "options": {
     "label": "Open",
@@ -366,11 +366,11 @@ When creating any new table, suggest these standard fields:
 
 ```json
 [
-  {"name": "[auto] ID", "type": "autoNumber"},
-  {"name": "[created] Created", "type": "createdTime"},
-  {"name": "[modified] Updated", "type": "lastModifiedTime"},
-  {"name": "[user] Created By", "type": "createdBy"},
-  {"name": "[user] Modified By", "type": "lastModifiedBy"}
+  {"name": "🆔 ID", "type": "autoNumber"},
+  {"name": "📅 Created", "type": "createdTime"},
+  {"name": "📅 Updated", "type": "lastModifiedTime"},
+  {"name": "👤 Created By", "type": "createdBy"},
+  {"name": "👤 Modified By", "type": "lastModifiedBy"}
 ]
 ```
 

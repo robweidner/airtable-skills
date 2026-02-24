@@ -342,3 +342,4 @@ if (action === "add") {
 4. **Test with small data** before running on full table
 5. **Use output.table()** for structured data display
 6. **Add progress indicators** for long operations
+7. **Automation scripts cannot use `return` outside of a function** - this is only supported in Extension scripts

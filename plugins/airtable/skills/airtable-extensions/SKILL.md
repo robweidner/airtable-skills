@@ -6,9 +6,11 @@ disable-model-invocation: true
 
 # Airtable Extensions Skill
 
-Build custom interface extensions (formerly "Blocks") for Airtable using React.
+Build custom interface extensions (formerly "Blocks") for Airtable using React and TypeScript.
 
 **Note:** This skill is for developers building custom React apps. For no-code interfaces, use the main `/airtable` skill and Interface Designer.
+
+> **This skill covers Interface Extensions**, which use the `@airtable/blocks/interface/ui` SDK. This is NOT the legacy Blocks SDK (`@airtable/blocks/ui`). The two have different import paths, different hooks, different entry point signatures, and interface extensions have no access to Airtable's built-in UI components (`Box`, `Button`, `Input`, `TablePicker`, etc.). Use plain HTML elements with Tailwind CSS for all UI.
 
 ## Prerequisites
 
@@ -76,15 +78,15 @@ They cannot:
 
 ### SDK Entry Point
 
-```jsx
-import { initializeBlock } from '@airtable/blocks/ui';
+```tsx
+import { initializeBlock } from '@airtable/blocks/interface/ui';
 import React from 'react';
 
 function MyExtension() {
   return <div>Hello, Airtable!</div>;
 }
 
-initializeBlock(() => <MyExtension />);
+initializeBlock({ interface: () => <MyExtension /> });
 ```
 
 ## Reference Files
@@ -98,19 +100,20 @@ For detailed API documentation:
 
 ### Read Records
 
-```jsx
-import { useRecords, useBase } from '@airtable/blocks/ui';
+```tsx
+import { useRecords, useBase } from '@airtable/blocks/interface/ui';
 
 function RecordList() {
   const base = useBase();
-  const table = base.getTableByName('Contacts');
-  const records = useRecords(table);
+  const table = base.getTableByIdIfExists('tblXXXXXXXXXX');
+  const records = table ? useRecords(table) : [];
+  const nameField = table?.getFieldIfExists('fldXXXXXXXXXX');
 
   return (
     <ul>
       {records.map(record => (
         <li key={record.id}>
-          {record.getCellValueAsString('Name')}
+          {nameField ? record.getCellValueAsString(nameField) : record.name}
         </li>
       ))}
     </ul>
@@ -120,17 +123,20 @@ function RecordList() {
 
 ### Update Record
 
-```jsx
-import { useBase } from '@airtable/blocks/ui';
+```tsx
+import { useBase } from '@airtable/blocks/interface/ui';
 
-function UpdateButton({ recordId }) {
+function UpdateButton({ recordId }: { recordId: string }) {
   const base = useBase();
-  const table = base.getTableByName('Contacts');
+  const table = base.getTableByIdIfExists('tblXXXXXXXXXX');
 
   const handleClick = async () => {
-    await table.updateRecordAsync(recordId, {
-      'Status': { name: 'Complete' }
-    });
+    if (!table) return;
+    if (table.hasPermissionToUpdateRecord(recordId, { 'fldXXXXXXXXXX': undefined })) {
+      await table.updateRecordAsync(recordId, {
+        'fldXXXXXXXXXX': { name: 'Complete' },
+      });
+    }
   };
 
   return <button onClick={handleClick}>Mark Complete</button>;
@@ -139,48 +145,60 @@ function UpdateButton({ recordId }) {
 
 ### User Input
 
-```jsx
-import { Input, Button, Box } from '@airtable/blocks/ui';
+Interface Extensions do not include built-in UI components like `Input`, `Button`, or `Box`. Use plain HTML elements with Tailwind CSS for styling:
+
+```tsx
 import { useState } from 'react';
 
-function SearchBox({ onSearch }) {
+function SearchBox({ onSearch }: { onSearch: (q: string) => void }) {
   const [query, setQuery] = useState('');
 
   return (
-    <Box display="flex" gap={2}>
-      <Input
+    <div className="flex gap-2">
+      <input
+        className="border rounded px-3 py-1.5 flex-1 dark:bg-gray-800 dark:text-white dark:border-gray-600"
         value={query}
         onChange={e => setQuery(e.target.value)}
         placeholder="Search..."
       />
-      <Button onClick={() => onSearch(query)}>
+      <button
+        className="px-4 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600"
+        onClick={() => onSearch(query)}
+      >
         Search
-      </Button>
-    </Box>
+      </button>
+    </div>
   );
 }
 ```
 
 ### Settings/Config
 
-```jsx
-import { useGlobalConfig } from '@airtable/blocks/ui';
+Interface Extensions use `useCustomProperties` instead of `useGlobalConfig`. Custom properties let interface builders configure your extension without editing code:
 
-function Settings() {
-  const globalConfig = useGlobalConfig();
-  const apiKey = globalConfig.get('apiKey');
+```tsx
+import { useCustomProperties, useBase } from '@airtable/blocks/interface/ui';
+import { FieldType } from '@airtable/blocks/interface/models';
 
-  const saveKey = (key) => {
-    globalConfig.setAsync('apiKey', key);
-  };
+function getCustomProperties(base: Base) {
+  const table = base.tables[0];
+  return [
+    {
+      key: 'statusField',
+      label: 'Status Field',
+      type: 'field' as const,
+      table,
+      shouldFieldBeAllowed: (field: {id: string; config: {type: string}}) =>
+        field.config.type === FieldType.SINGLE_SELECT,
+      defaultValue: table?.fields.find(f => f.type === FieldType.SINGLE_SELECT),
+    },
+  ];
+}
 
-  return (
-    <Input
-      value={apiKey || ''}
-      onChange={e => saveKey(e.target.value)}
-      placeholder="Enter API key"
-    />
-  );
+function MyExtension() {
+  const { customPropertyValueByKey, errorState } = useCustomProperties(getCustomProperties);
+  const statusField = customPropertyValueByKey.statusField;
+  // Use statusField...
 }
 ```
 
@@ -228,13 +246,13 @@ try {
 
 1. **Records are reactive** - `useRecords` updates automatically when data changes. Don't manually poll.
 
-2. **Field access** - Use field names as strings, not field IDs (unless using `getFieldById`).
+2. **Field access** - Use field IDs, not field names. Field names can change; IDs are stable. Use `table.getFieldIfExists(fieldId)` and always check for null.
 
 3. **Permissions** - Extension can only do what the current user can do. Check permissions before operations.
 
-4. **Global config limits** - 50KB total. Don't store large data in global config.
+4. **Custom properties** - Use `useCustomProperties` for builder-configurable settings, not `useGlobalConfig`.
 
-5. **No server-side** - Extensions are client-only. For server operations, use Airtable Automations or external webhooks.
+5. **No server-side** - The extension runtime is client-only. For server operations, use Airtable Automations or external webhooks.
 
 ---
 
@@ -286,26 +304,26 @@ Before writing any code or running `block run`, verify this configuration:
 
 Add this to your extension to see exactly what data is available:
 
-```jsx
+```tsx
 function DataDiagnostic() {
   const base = useBase();
 
   return (
-    <Box padding={3}>
-      <Heading size="small">Available Data Sources</Heading>
+    <div className="p-4">
+      <h3 className="text-sm font-bold mb-2">Available Data Sources</h3>
       {base.tables.map(table => (
-        <Box key={table.id} marginTop={2}>
-          <Text fontWeight="bold">{table.name} ({table.id})</Text>
-          <Box marginLeft={3}>
+        <div key={table.id} className="mt-2">
+          <p className="font-bold">{table.name} ({table.id})</p>
+          <div className="ml-4">
             {table.fields.map(field => (
-              <Text key={field.id} fontSize="small">
+              <p key={field.id} className="text-xs text-gray-500">
                 {field.name} ({field.id}) — {field.type}
-              </Text>
+              </p>
             ))}
-          </Box>
-        </Box>
+          </div>
+        </div>
       ))}
-    </Box>
+    </div>
   );
 }
 ```
@@ -350,9 +368,11 @@ If a table or field you expect is missing from this output, it hasn't been enabl
 
 **Workaround:** Use the Airtable Web API to read from other tables:
 
-```jsx
-// Use fetch with the Airtable REST API for secondary tables
-const fetchLinkedRecords = async (tableId) => {
+```tsx
+// Use fetch with the Airtable REST API for secondary tables.
+// Store credentials (e.g. API token) via custom properties (string type),
+// not hardcoded in source code.
+const fetchLinkedRecords = async (tableId: string, apiToken: string) => {
   const response = await fetch(
     `https://api.airtable.com/v0/${baseId}/${tableId}`,
     { headers: { Authorization: `Bearer ${apiToken}` } }

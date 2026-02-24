@@ -195,9 +195,9 @@ mcp__airtable__create_table
   fields: [
     {"name": "Name", "type": "singleLineText"},
     {"name": "Email", "type": "email"},
-    {"name": "[auto] ID", "type": "autoNumber"},
-    {"name": "[created] Created", "type": "createdTime"},
-    {"name": "[modified] Updated", "type": "lastModifiedTime"}
+    {"name": "🆔 ID", "type": "autoNumber"},
+    {"name": "📅 Created", "type": "createdTime"},
+    {"name": "📅 Updated", "type": "lastModifiedTime"}
   ]
 ```
 
@@ -260,9 +260,9 @@ The Airtable MCP requires configuration with your PAT. Typically set in:
   "mcpServers": {
     "airtable": {
       "command": "npx",
-      "args": ["@anthropic/airtable-mcp"],
+      "args": ["-y", "airtable-mcp-server"],
       "env": {
-        "AIRTABLE_API_KEY": "patXXXXXXXXXXXXXX"
+        "AIRTABLE_API_KEY": "${AIRTABLE_PAT}"
       }
     }
   }
@@ -277,7 +277,7 @@ If MCP isn't configured, fall back to REST API patterns.
 The MCP has no `delete_field` or `delete_table` tool. Fields and tables can only be deleted in the Airtable UI. **Never offer to delete fields via MCP — always provide a list of fields for the user to delete manually.**
 
 ### Cannot Create Formula, Rollup, or Lookup Fields
-Returns `UNSUPPORTED_FIELD_TYPE_FOR_CREATE`. Use the `[convert]` placeholder pattern (create as `singleLineText` with conversion instructions in the description).
+Returns `UNSUPPORTED_FIELD_TYPE_FOR_CREATE`. Use the `🔧` placeholder pattern (create as `singleLineText` with conversion instructions in the description).
 
 ### Filter Conditions Not Exposed
 Count, Lookup, and Rollup fields support conditional filtering in the Airtable UI, but `describe_table` does **not** expose these filter conditions. The API only returns the base field type and link field ID. Do not assume filters are absent just because the API doesn't show them.
