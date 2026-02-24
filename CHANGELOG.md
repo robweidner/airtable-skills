@@ -2,6 +2,39 @@
 
 All notable changes to the Airtable Skills plugin.
 
+## [1.6.0] - 2026-02-24
+
+### Added
+
+- **CLAUDE.md** — Root-level guidance file for Claude Code instances working in this repo
+- **AI field type** (🪄) added to `field-types.md` for cross-file consistency with `emoji-conventions.md`
+- **Barcode emoji** (📱) restored to both `field-types.md` and `emoji-conventions.md`
+
+### Changed
+
+- **MCP server package fix** — Corrected non-existent `@airtable/mcp-server` to the real `airtable-mcp-server` npm package; mapped `AIRTABLE_API_KEY` env var correctly *(contributed by Andrew Mitchell)*
+- **Emoji system overhaul** — Replaced bracket notation (`[formula]`, `[check]`, `[wip]`, etc.) with actual Unicode emojis that render correctly in Airtable field names *(contributed by Andrew Mitchell)*
+- **Extensions SDK rewrite** — Rewrote `airtable-extensions` skill and all three reference docs for the Interface Extensions SDK, replacing deprecated Blocks SDK patterns *(contributed by Andrew Mitchell)*
+  - Updated import paths from `@airtable/blocks/ui` to `@airtable/blocks/interface/ui`
+  - Replaced `initializeBlock(() => ...)` with `initializeBlock({ interface: () => ... })`
+  - Removed Blocks SDK UI components (`Box`, `Button`, `Input`, `TablePicker`, etc.) in favor of HTML + Tailwind CSS
+  - Replaced `useGlobalConfig` with `useCustomProperties`
+  - Added `useColorScheme` for dark mode support
+  - Added `FieldType` enum usage, `expandRecord`, `colorUtils`
+  - Added permission checking patterns throughout
+  - Documented hooks NOT available in Interface Extensions (`useViewport`, `useCursor`, `useRecordById`)
+- **Automation-involved emoji** changed from 🤖 to ⚡ to avoid collision with Formula/Rollup type emoji
+
+### Fixed
+
+- **React Rules of Hooks** — Fixed conditional `useRecords` calls in code examples that violated React hook rules
+- **`useColorScheme` return type** — Aligned docs to consistent object return shape across all reference files
+- **`useCustomProperties` API shape** — Reconciled three conflicting API signatures to one consistent pattern
+- **Undefined function parameters** — Added missing `apiToken` and `baseId` params to fetch examples
+- **Null safety** — Added proper field null checks in `useRecords` code examples
+- **Missing trailing newline** in `scripting-patterns.md`
+- **Automation script `return` limitation** — Documented that `return` outside a function is only supported in Extension scripts, not Automation scripts
+
 ## [1.5.0] - 2026-02-08
 
 ### Added

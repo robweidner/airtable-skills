@@ -6,13 +6,13 @@
     },
     "metadata": {
         "description": "Airtable skills for Claude Code - schema design, scripting, automations, and more",
-        "version": "1.5.0"
+        "version": "1.6.0"
     },
     "plugins": [
         {
             "name": "airtable",
             "description": "Comprehensive Airtable assistant for schema design, API interactions, scripting, interfaces, and automations",
-            "version": "1.5.0",
+            "version": "1.6.0",
             "author": {
                 "name": "Rob Weidner"
             },
