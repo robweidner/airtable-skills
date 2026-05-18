@@ -1,0 +1,21 @@
+# Drop-in .gitignore for a shareable Airtable custom extension.
+# Place this at the repo root (rename it to .gitignore).
+
+# Node
+/node_modules
+
+# Airtable CLI state — DO NOT commit. These pin the block to YOUR base
+# and will break anyone who forks the repo.
+/.airtableblocksrc.json
+/.block/
+
+# Build output
+/build
+
+# Env / secrets
+.env
+.env.*
+
+# OS / editor cruft
+.DS_Store
+.tmp/
