@@ -295,3 +295,5 @@ Use curly braces to insert field values:
 4. **Field changes only** - "When record updated" only fires when the WATCHED field changes, not any field.
 
 5. **Script timeouts** - Scripts have a 30-second timeout. For long operations, break into multiple automations.
+
+6. **No top-level `return` statements** - Automation scripts do not run inside a function, so top-level `return` statements will cause a syntax error. Use `if/else` blocks to control flow instead of early returns.
